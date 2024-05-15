@@ -2,7 +2,7 @@
 # Contributor: sukanka <su975853527 at gmail.com>
 
 pkgname=tradingview
-pkgver=2.7.5
+pkgver=2.7.7
 pkgrel=1
 pkgdesc='A charting platform for traders and investors'
 arch=('x86_64')
@@ -11,8 +11,8 @@ license=('LicenseRef-TradingView')
 makedepends=('links'
              'squashfs-tools')
 noextract=("$pkgname-$pkgver.snap")
-source=("$pkgname-$pkgver.snap::https://api.snapcraft.io/api/v1/snaps/download/nJdITJ6ZJxdvfu8Ch7n5kH5P99ClzBYV_51.snap")
-b2sums=('6d1b3eef5b891f298883221248bc1edebbb7a4e1d8e2db77d0b1992f28660e1f42069f4cf55efac866cae4fe8db0ae4a026c292049bb0c9b44e59a31120753da')
+source=("$pkgname-$pkgver.snap::https://api.snapcraft.io/api/v1/snaps/download/nJdITJ6ZJxdvfu8Ch7n5kH5P99ClzBYV_53.snap")
+b2sums=('c6af327cf463966b1359341c39438023040e48d7e61ab6c30ca0ee64d0a508e815eceb235ee45233eb34b8a81b19e09ad7a28b67f8f6a006541d1ef7630969f8')
 
 prepare() {
     unsquashfs -f -n -q -d "$pkgname-$pkgver/" "$pkgname-$pkgver.snap"
