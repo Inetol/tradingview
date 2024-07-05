@@ -2,34 +2,30 @@
 # Contributor: sukanka <su975853527 at gmail.com>
 
 pkgname=tradingview
+_pkgname=TradingView
 pkgver=2.8.0
-pkgrel=1
+pkgrel=2
 pkgdesc='A charting platform for traders and investors'
 arch=('x86_64')
 url='https://www.tradingview.com/desktop/'
 license=('LicenseRef-TradingView')
-makedepends=('links'
-             'squashfs-tools')
-noextract=("$pkgname-$pkgver.snap")
-source=("$pkgname-$pkgver.snap::https://api.snapcraft.io/api/v1/snaps/download/nJdITJ6ZJxdvfu8Ch7n5kH5P99ClzBYV_55.snap")
-b2sums=('6786be21ca650488efab72c56877b80189722696f2d73995c0fb2c6874a4a67981112bb8086ce721d6b9a3ff80d71ca5a4db41a3629976feacf2e1d324d2221d')
+makedepends=('links')
+source=("$pkgname-$pkgver.deb::https://tvd-packages.tradingview.com/ubuntu/stable/pool/multiverse/t/tradingview/jammy/$pkgname-$pkgver-1_amd64.deb")
+b2sums=('f967621b5dcb596909e9b298a1748d0a71a9e054d697bfe8cbb2760c748614b3a125d281e4d35f2f5df1dd52e6acfb91e32a67e2e58a8b7b13d9f9779ce52df2')
 
 prepare() {
-    unsquashfs -f -n -q -d "$pkgname-$pkgver/" "$pkgname-$pkgver.snap"
-    chmod 755 "$pkgname-$pkgver/"
-
-    # License
-    links -width 80 -dump 'https://www.tradingview.com/policies/' | sed -n '/Terms of Use/,/TradingView may update these Rules at any time/p' > "LICENSE"
+    mkdir -p "$pkgname-$pkgver/"
+    bsdtar -xpf 'data.tar.xz' -C "$pkgname-$pkgver/"
 
     # Convert
     cd "$pkgname-$pkgver/"
 
-    mv "meta/gui/$pkgname.desktop" "$pkgname.desktop"
-    sed -i -e "s|Exec=.*|Exec=/usr/bin/$pkgname %U|" -e "s|Icon=.*|Icon=$pkgname|" "$pkgname.desktop"
+    links -width 80 -dump 'https://www.tradingview.com/policies/' | sed -n '/Terms of Use/,/TradingView may update these Rules at any time/p' > "opt/$_pkgname/LICENSE"
 
-    mv "meta/gui/icon.png" "$pkgname.png"
+    mv "usr/share/applications/$pkgname.desktop" "opt/$_pkgname/$pkgname.desktop"
+    sed -i -e "s|Exec=.*|Exec=/usr/bin/$pkgname %U|" "opt/$_pkgname/$pkgname.desktop"
 
-    rm -rf {data-dir/,gnome-platform/,lib/,meta/,scripts/,usr/,*.sh}
+    mv "usr/share/icons/hicolor/512x512/apps/$pkgname.png" "opt/$_pkgname/$pkgname.png"
 }
 
 package() {
@@ -59,8 +55,11 @@ package() {
              'nss'
              'pango')
 
+    optdepends=('libappindicator-gtk3: Systray indicator support'
+                'xdg-utils: Open files')
+
     install -d "$pkgdir/opt/$pkgname/"
-    cp -a "$pkgname-$pkgver/." "$pkgdir/opt/$pkgname/"
+    cp -a "$pkgname-$pkgver/opt/$_pkgname/." "$pkgdir/opt/$pkgname/"
 
     chmod 755 "$pkgdir/opt/$pkgname/$pkgname"
 
@@ -73,5 +72,6 @@ package() {
     install -d "$pkgdir/usr/share/icons/hicolor/512x512/apps/"
     ln -s "/opt/$pkgname/$pkgname.png" "$pkgdir/usr/share/icons/hicolor/512x512/apps/$pkgname.png"
 
-    install -Dm644 "LICENSE" -t "$pkgdir/usr/share/licenses/$pkgname/"
+    install -d "$pkgdir/usr/share/licenses/$pkgname/"
+    ln -s "/opt/$pkgname/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
