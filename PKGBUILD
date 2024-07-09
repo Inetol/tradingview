@@ -3,63 +3,49 @@
 
 pkgname=tradingview
 _pkgname=TradingView
-pkgver=2.8.0
-pkgrel=2
+pkgver=2.8.1
+pkgrel=1
 pkgdesc='A charting platform for traders and investors'
 arch=('x86_64')
 url='https://www.tradingview.com/desktop/'
 license=('LicenseRef-TradingView')
 makedepends=('links')
-source=("$pkgname-$pkgver.deb::https://tvd-packages.tradingview.com/ubuntu/stable/pool/multiverse/t/tradingview/jammy/$pkgname-$pkgver-1_amd64.deb")
-b2sums=('f967621b5dcb596909e9b298a1748d0a71a9e054d697bfe8cbb2760c748614b3a125d281e4d35f2f5df1dd52e6acfb91e32a67e2e58a8b7b13d9f9779ce52df2')
+_electron=electron30
+source=("$pkgname-$pkgver.deb::https://tvd-packages.tradingview.com/ubuntu/stable/pool/multiverse/t/tradingview/jammy/$pkgname-$pkgver-1_amd64.deb"
+        "$pkgname.sh")
+b2sums=('404580b1978d7873ca3a4df7a958fb3a98e343e24573fee7aaad46b304400588a2c0238fe6ae29514e20174a3e4b3777ea5257ad431bc254e0a3810a5c498692'
+        '1c7aaed8c8a4dad5030dc2f5506915e29d3b5ce19a61455db8be6821bc156ce6b779f7f4c63fd3929a141232443a4f5979e49c8ba3a18424d2854ec684e2f037')
 
 prepare() {
+    sed -i "s|@ELECTRON@|$_electron|" $pkgname.sh
+
     mkdir -p "$pkgname-$pkgver/"
     bsdtar -xpf 'data.tar.xz' -C "$pkgname-$pkgver/"
 
     # Convert
     cd "$pkgname-$pkgver/"
 
-    links -width 80 -dump 'https://www.tradingview.com/policies/' | sed -n '/Terms of Use/,/TradingView may update these Rules at any time/p' > "opt/$_pkgname/LICENSE"
+    links -width 80 -dump 'https://www.tradingview.com/policies/' | sed -n '/Terms of Use/,/TradingView may update these Rules at any time/p' > "opt/$_pkgname/resources/LICENSE"
 
-    mv "usr/share/applications/$pkgname.desktop" "opt/$_pkgname/$pkgname.desktop"
-    sed -i -e "s|Exec=.*|Exec=/usr/bin/$pkgname %U|" "opt/$_pkgname/$pkgname.desktop"
+    cat "../$pkgname.sh" > "opt/$_pkgname/resources/$pkgname"
 
-    mv "usr/share/icons/hicolor/512x512/apps/$pkgname.png" "opt/$_pkgname/$pkgname.png"
+    mv "usr/share/applications/$pkgname.desktop" "opt/$_pkgname/resources/$pkgname.desktop"
+    sed -i "s|Exec=.*|Exec=/usr/bin/$pkgname %U|" "opt/$_pkgname/resources/$pkgname.desktop"
+
+    mv "usr/share/icons/hicolor/512x512/apps/$pkgname.png" "opt/$_pkgname/resources/$pkgname.png"
 }
 
 package() {
-    depends=('alsa-lib'
-             'at-spi2-core'
-             'cairo'
-             'dbus'
-             'expat'
+    depends=("$_electron"
              'gcc-libs'
              'glib2'
              'glibc'
-             'gtk3'
-             'hicolor-icon-theme'
-             'libcups'
-             'libdrm'
-             'libsecret'
-             'libx11'
-             'libxcb'
-             'libxcomposite'
-             'libxdamage'
-             'libxext'
-             'libxfixes'
-             'libxkbcommon'
-             'libxrandr'
-             'mesa'
-             'nspr'
-             'nss'
-             'pango')
+             'libsecret')
 
-    optdepends=('libappindicator-gtk3: Systray indicator support'
-                'xdg-utils: Open files')
+    optdepends=('libappindicator-gtk3: Systray indicator support')
 
     install -d "$pkgdir/opt/$pkgname/"
-    cp -a "$pkgname-$pkgver/opt/$_pkgname/." "$pkgdir/opt/$pkgname/"
+    cp -a "$pkgname-$pkgver/opt/$_pkgname/resources/." "$pkgdir/opt/$pkgname/"
 
     chmod 755 "$pkgdir/opt/$pkgname/$pkgname"
 
@@ -69,8 +55,8 @@ package() {
     install -d "$pkgdir/usr/share/applications/"
     ln -s "/opt/$pkgname/$pkgname.desktop" "$pkgdir/usr/share/applications/$pkgname.desktop"
 
-    install -d "$pkgdir/usr/share/icons/hicolor/512x512/apps/"
-    ln -s "/opt/$pkgname/$pkgname.png" "$pkgdir/usr/share/icons/hicolor/512x512/apps/$pkgname.png"
+    install -d "$pkgdir/usr/share/icons/"
+    ln -s "/opt/$pkgname/$pkgname.png" "$pkgdir/usr/share/icons/$pkgname.png"
 
     install -d "$pkgdir/usr/share/licenses/$pkgname/"
     ln -s "/opt/$pkgname/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
