@@ -3,7 +3,7 @@
 
 pkgname=tradingview
 _pkgname=TradingView
-pkgver=2.9.2
+pkgver=2.9.4
 pkgrel=1
 pkgdesc='A charting platform for traders and investors'
 arch=('x86_64')
@@ -13,7 +13,7 @@ makedepends=('links')
 _electron=electron30
 source=("$pkgname-$pkgver.deb::https://tvd-packages.tradingview.com/ubuntu/stable/pool/multiverse/t/tradingview/jammy/$pkgname-$pkgver-1_amd64.deb"
         "$pkgname.sh")
-b2sums=('ca1a4c8128dba4d1e8f8bceb2376e352a200522dbe0238b5907f0756fd5d189c6ca9e261dc5507843621e505164970a7a7da2cf4558b16cb125e47475c64f393'
+b2sums=('57f1e5153c7b218c03c863048dd2b54df31607768168849c9fb3a4b0c15475c2f8f2bdd60b200a9eb60a4254283003658d61d50e0fa1ac80a57e2d18e939ed97'
         '1c7aaed8c8a4dad5030dc2f5506915e29d3b5ce19a61455db8be6821bc156ce6b779f7f4c63fd3929a141232443a4f5979e49c8ba3a18424d2854ec684e2f037')
 
 prepare() {
